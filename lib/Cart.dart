@@ -12,7 +12,7 @@ class Cart extends StatefulWidget {
   const Cart({
     super.key,
     required this.user,
-    required this.cartItems,
+    required this.cartItems
   });
 
   @override
@@ -22,7 +22,7 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   Map<int, int> itemCounts = {};
 
-  var totalPrice = 0;
+  var totalPrice = 0.0;
 
   bool isExpanded = false;
 
@@ -35,16 +35,22 @@ class _CartState extends State<Cart> {
   @override
   void initState() {
     super.initState();
+    for (var i = 0; i < widget.cartItems.length; i++) {
+      itemCounts[i] = 1; // Assuming each item is initially added once to the cart
+    }
     calculateTotalPrice();
   }
 
   void calculateTotalPrice() {
-    totalPrice = 0;
-    for (int i = 0; i < widget.cartItems.length; i++) {
-      final product = widget.cartItems[i];
-      final count = itemCounts[i] ?? 1;
-      totalPrice += product.price.toInt() * count;
+    double total = 0.0;
+    for (var i = 0; i < widget.cartItems.length; i++) {
+      // Multiply price of each item by its quantity and add to the total
+      total += widget.cartItems[i].price * itemCounts[i]!;
     }
+
+    setState(() {
+      totalPrice = total; // Update the total price
+    });
   }
 
   @override
@@ -91,7 +97,6 @@ class _CartState extends State<Cart> {
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
                         final product = widget.cartItems[index];
-                        itemCounts[index] = itemCounts[index] ?? 1;
                         return Card(
                             elevation: 3,
                             margin: const EdgeInsets.all(5),
@@ -205,7 +210,7 @@ class _CartState extends State<Cart> {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 5),
                             child: Text(
-                              "Total Price: \$$totalPrice",
+                              "Total Price: \$${totalPrice.toStringAsFixed(2)}",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20
@@ -227,8 +232,8 @@ class _CartState extends State<Cart> {
                                       context,
                                       MaterialPageRoute(builder: (context) => ProductListScreen(
                                         user: widget.user,
-                                        cartItems: widget.cartItems)
-                                      )
+                                        cartItems: widget.cartItems
+                                      ))
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(

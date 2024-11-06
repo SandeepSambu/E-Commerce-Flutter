@@ -6,9 +6,9 @@ import 'package:recipeapp_flutter/network.dart';
 
 class Footer extends StatelessWidget {
   final User? user;
-  final List<Products> cartItems;
   final Function menuPress;
-  const Footer({super.key, required this.user, required this.cartItems, required this.menuPress});
+  final List<Products> cartItems;
+  const Footer({super.key, required this.user, required this.menuPress, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class Footer extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems)));
+                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems,)));
                     },
                     icon: const Icon(Icons.add_shopping_cart, size: 40)),
                   Text("${cartItems.length}", style: const TextStyle(fontSize: 25),)
