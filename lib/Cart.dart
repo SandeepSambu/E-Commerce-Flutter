@@ -5,6 +5,7 @@ import 'package:recipeapp_flutter/Menu.dart';
 import 'package:recipeapp_flutter/ProductListScreen.dart';
 import 'network.dart';
 
+// Cart screen where users can view and manage their cart items.
 class Cart extends StatefulWidget {
   final User? user;
   final List<Products> cartItems;
@@ -20,12 +21,13 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  Map<int, int> itemCounts = {};
+  Map<int, int> itemCounts = {};  // Track quantity of each item in the cart.
 
-  var totalPrice = 0.0;
+  var totalPrice = 0.0;  // Variable to store the total price of the cart items.
 
-  bool isExpanded = false;
+  bool isExpanded = false;  // Boolean to manage the visibility of the menu.
 
+  // Toggle menu visibility when the menu button is pressed.
   void menuPress() {
     setState(() {
       isExpanded = !isExpanded;
@@ -35,8 +37,9 @@ class _CartState extends State<Cart> {
   @override
   void initState() {
     super.initState();
+    // Initialize the itemCounts map to track quantity of each product in the cart.
     for (var i = 0; i < widget.cartItems.length; i++) {
-      itemCounts[i] = 1; // Assuming each item is initially added once to the cart
+      itemCounts[i] = 1; // Default each item to 1 quantity in the cart.
     }
     calculateTotalPrice();
   }
@@ -53,6 +56,7 @@ class _CartState extends State<Cart> {
     });
   }
 
+  // Calculate the total price by multiplying each item's price with its quantity.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
