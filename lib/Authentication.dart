@@ -30,7 +30,7 @@ class _AuthenticationState extends State<Authentication> {
       await user?.reload();
       user = auth.currentUser;
       // Navigates to ProductListScreen upon successful registration
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: user, cartItems: [],)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: user, cartItems: {},)));
       return userCredential.user;
     } catch (e) {
       // Error handling: Updates error message in case of failure
@@ -48,7 +48,7 @@ class _AuthenticationState extends State<Authentication> {
       // Signs in with email and password
       UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
       // Navigates to ProductListScreen upon successful sign-in
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: userCredential.user, cartItems: [],)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: userCredential.user, cartItems: {},)));
       print("SignedIn Successfully: ${userCredential.user}");
     } catch (e) {
       // Error handling: Updates error message in case of failure
