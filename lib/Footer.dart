@@ -6,7 +6,7 @@ import 'package:recipeapp_flutter/network.dart';
 
 class Footer extends StatelessWidget {
   final User? user;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
   final Function menuPress;
   const Footer({super.key, required this.user, required this.cartItems, required this.menuPress});
 

@@ -24,7 +24,7 @@ class ProductsApp extends StatelessWidget {
       initialRoute: "/",
       routes: {
         // Sets the initial route to ProductListScreen, passing a default empty cart
-        "/" : (context) => const ProductListScreen(user: null, cartItems: [],)
+        "/" : (context) => const ProductListScreen(user: null, cartItems: {},)
       },
     );
   }

@@ -7,7 +7,7 @@ import 'network.dart';
 
 class Cart extends StatefulWidget {
   final User? user;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
 
   const Cart({
     super.key,
@@ -20,9 +20,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  Map<int, int> itemCounts = {};
-
-  var totalPrice = 0;
+  double totalPrice = 0.0;
 
   bool isExpanded = false;
 
@@ -39,16 +37,15 @@ class _CartState extends State<Cart> {
   }
 
   void calculateTotalPrice() {
-    totalPrice = 0;
-    for (int i = 0; i < widget.cartItems.length; i++) {
-      final product = widget.cartItems[i];
-      final count = itemCounts[i] ?? 1;
-      totalPrice += product.price.toInt() * count;
+    List<Products> items = widget.cartItems.keys.toList();
+    for(var i=0; i < items.length; i++) {
+      totalPrice += items[i].price * widget.cartItems[items[i]]!;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final items = widget.cartItems.keys.toList();
     return Scaffold(
         appBar: AppBar(
           elevation: 3,
@@ -90,8 +87,8 @@ class _CartState extends State<Cart> {
                     child: ListView.builder(
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
-                        final product = widget.cartItems[index];
-                        itemCounts[index] = itemCounts[index] ?? 1;
+                        final product = items[index];
+                        // itemCounts[index] = itemCounts[index] ?? 1;
                         return Card(
                             elevation: 3,
                             margin: const EdgeInsets.all(5),
@@ -141,8 +138,9 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          if(itemCounts[index]! > 0) {
-                                                            itemCounts[index] = itemCounts[index]! - 1;
+                                                          if(widget.cartItems[items[index]]! > 0) {
+                                                            totalPrice = 0.0;
+                                                            widget.cartItems[items[index]] = widget.cartItems[items[index]]! - 1;
                                                           }
                                                           calculateTotalPrice();
                                                         });
@@ -157,7 +155,7 @@ class _CartState extends State<Cart> {
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                                                      child: Text("${itemCounts[index]}"),
+                                                      child: Text("${widget.cartItems[items[index]]}"),
                                                     ),
                                                     Container(
                                                       width: 3,
@@ -167,7 +165,8 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          itemCounts[index] = itemCounts[index]! + 1;
+                                                          totalPrice = 0.0;
+                                                          widget.cartItems[items[index]] = widget.cartItems[items[index]]! + 1;
                                                           calculateTotalPrice();
                                                         });
                                                       },
@@ -205,7 +204,7 @@ class _CartState extends State<Cart> {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 5),
                             child: Text(
-                              "Total Price: \$$totalPrice",
+                              "Total Price: \$${totalPrice.toStringAsFixed(2)}",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20
