@@ -4,11 +4,12 @@ import 'package:recipeapp_flutter/Cart.dart';
 import 'package:recipeapp_flutter/ProductListScreen.dart';
 import 'package:recipeapp_flutter/network.dart';
 
+// Footer widget to display at the bottom of the screen
 class Footer extends StatelessWidget {
   final User? user;
   final Map<Products, int> cartItems;
   final Function menuPress;
-  const Footer({super.key, required this.user, required this.cartItems, required this.menuPress});
+  const Footer({super.key, required this.user, required this.menuPress, required this.cartItems});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class Footer extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems)));
+                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems,)));
                     },
                     icon: const Icon(Icons.add_shopping_cart, size: 40)),
                   Text("${cartItems.length}", style: const TextStyle(fontSize: 25),)

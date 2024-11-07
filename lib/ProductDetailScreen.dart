@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:recipeapp_flutter/Footer.dart';
 import 'package:recipeapp_flutter/network.dart';
 
+// represents a detailed view of a selected product, displaying information and reviews.
 class ProductDetailScreen extends StatelessWidget {
   final User? user;
   final Products product;
@@ -14,8 +15,8 @@ class ProductDetailScreen extends StatelessWidget {
     required this.product,
     super.key,
     required this.user,
-    required this.cartItems,
-    required this.menuPress
+    required this.menuPress,
+    required this.cartItems
   });
 
   @override
@@ -88,7 +89,7 @@ class ProductDetailScreen extends StatelessWidget {
               ],
               const SizedBox(height: 16),
 
-              if (!kIsWeb) Footer(user: user, cartItems: cartItems, menuPress: menuPress,),
+              if (!kIsWeb) Footer(user: user, menuPress: menuPress, cartItems: cartItems,),
             ],
           ),
         ),

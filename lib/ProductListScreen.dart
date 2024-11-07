@@ -47,12 +47,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-    print("displayName - ${widget.user?.displayName}");
-
     if(widget.cartItems.isNotEmpty) {
-      items = widget.cartItems;
+      cartItems = widget.cartItems;
     } else {
       items = {};
+
     }
 
     productData = fetchProductsData();
@@ -103,6 +102,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 onChanged: (_) {
                                   setState(() {
                                     searchText.text = controller.text;
+                                    print("productList - $cartItems");
                                   });
                                 },
                                 leading: const Icon(Icons.search),
@@ -131,11 +131,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("${items.length}", style: const TextStyle(fontSize: 20),),
+                          Text("${cartItems.length}", style: const TextStyle(fontSize: 20),),
                           const SizedBox(width: 5),
                           IconButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Cart(user: widget.user, cartItems: items,)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Cart(user: widget.user, cartItems: cartItems,)));
                             },
                             icon: const Icon(Icons.add_shopping_cart)
                           ),
@@ -208,7 +208,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               ],
                             ),
                           ),
-                          kIsWeb ? const SizedBox() : Footer(user: widget.user, cartItems : items, menuPress: menuPress,)
+                          kIsWeb ? const SizedBox() : Footer(user: widget.user, menuPress: menuPress, cartItems: cartItems,)
                         ],
                       );
                     } else if(snapshot.hasError) {

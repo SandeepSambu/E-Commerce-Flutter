@@ -4,6 +4,7 @@ import 'package:recipeapp_flutter/network.dart';
 import 'ProductDetailScreen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+// A StatefulWidget for representing the ProductCard widget
 class ProductCard extends StatefulWidget {
   final Products product;
   final User? user;
@@ -26,7 +27,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
 
-  bool pressed = false;
+  bool pressed = false;  // A boolean to track if the product is already added to cart
 
   late List<Products> items;
 
@@ -34,6 +35,7 @@ class _ProductCardState extends State<ProductCard> {
   void initState() {
     super.initState();
     items = widget.cartItems.keys.toList();
+    // Loop through cartItems and check if this product is already added
     for(var i=0; i<items.length; i++) {
       if(items[i].id == widget.product.id) {
         pressed = true;
@@ -44,8 +46,10 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
+    // GestureDetector to detect tap on the product card
     return GestureDetector(
       onTap: (){
+        // Navigating to the ProductDetailScreen when the card is tapped
         Navigator.push(
             context,
             MaterialPageRoute(
