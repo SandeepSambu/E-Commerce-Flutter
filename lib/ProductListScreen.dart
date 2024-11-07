@@ -11,7 +11,7 @@ import "network.dart";
 
 class ProductListScreen extends StatefulWidget {
   final User? user;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
   const ProductListScreen({super.key, required this.user, required this.cartItems});
 
   @override
@@ -29,7 +29,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   int visibleImage = 0;
 
-  late List<Products> cartItems;
+  late Map<Products, int> items;
 
   final List<String> images = [
     "Images/beauty.jpeg",
@@ -40,7 +40,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   void cart(Products product) {
     setState(() {
-      cartItems.add(product);
+      items[product] = 1;
     });
   }
 
@@ -50,7 +50,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
     if(widget.cartItems.isNotEmpty) {
       cartItems = widget.cartItems;
     } else {
-      cartItems = [];
+      items = {};
+
     }
 
     productData = fetchProductsData();
@@ -198,8 +199,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                         product: product,
                                         user: widget.user,
                                         cart: cart,
+                                        cartItems: widget.cartItems,
                                         menuPress: menuPress,
-                                        cartItems: cartItems,
                                       );
                                     }
                                   ),

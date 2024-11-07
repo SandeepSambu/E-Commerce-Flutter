@@ -9,7 +9,7 @@ class ProductCard extends StatefulWidget {
   final Products product;
   final User? user;
   final Function cart;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
   final Function menuPress;
 
   const ProductCard({
@@ -29,12 +29,15 @@ class _ProductCardState extends State<ProductCard> {
 
   bool pressed = false;  // A boolean to track if the product is already added to cart
 
+  late List<Products> items;
+
   @override
   void initState() {
     super.initState();
+    items = widget.cartItems.keys.toList();
     // Loop through cartItems and check if this product is already added
-    for(var i = 0; i < widget.cartItems.length; i++) {
-      if(widget.cartItems[i].id == widget.product.id) {
+    for(var i=0; i<items.length; i++) {
+      if(items[i].id == widget.product.id) {
         pressed = true;
         break;
       }
@@ -108,7 +111,11 @@ class _ProductCardState extends State<ProductCard> {
                   alignment: Alignment.bottomCenter,
                   child: ElevatedButton(
                       onPressed: () {
-                        widget.cart(widget.product);
+                        if(widget.cartItems.isNotEmpty && !items.contains(widget.product)) {
+                          widget.cart(widget.product);
+                        } else {
+                          widget.cart(widget.product);
+                        }
                         setState(() {
                           pressed = true;
                         });

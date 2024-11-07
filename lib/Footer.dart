@@ -7,8 +7,8 @@ import 'package:recipeapp_flutter/network.dart';
 // Footer widget to display at the bottom of the screen
 class Footer extends StatelessWidget {
   final User? user;
+  final Map<Products, int> cartItems;
   final Function menuPress;
-  final List<Products> cartItems;
   const Footer({super.key, required this.user, required this.menuPress, required this.cartItems});
 
   @override

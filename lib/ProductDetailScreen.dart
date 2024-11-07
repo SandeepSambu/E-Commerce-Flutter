@@ -8,7 +8,7 @@ import 'package:recipeapp_flutter/network.dart';
 class ProductDetailScreen extends StatelessWidget {
   final User? user;
   final Products product;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
   final Function menuPress;
 
   const ProductDetailScreen({

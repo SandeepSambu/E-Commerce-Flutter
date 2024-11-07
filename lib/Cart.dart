@@ -8,7 +8,7 @@ import 'network.dart';
 // Cart screen where users can view and manage their cart items.
 class Cart extends StatefulWidget {
   final User? user;
-  final List<Products> cartItems;
+  final Map<Products, int> cartItems;
 
   const Cart({
     super.key,
@@ -21,9 +21,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  Map<int, int> itemCounts = {};  // Track quantity of each item in the cart.
-
-  var totalPrice = 0.0;  // Variable to store the total price of the cart items.
+  double totalPrice = 0.0;
 
   bool isExpanded = false;  // Boolean to manage the visibility of the menu.
 
@@ -45,10 +43,9 @@ class _CartState extends State<Cart> {
   }
 
   void calculateTotalPrice() {
-    double total = 0.0;
-    for (var i = 0; i < widget.cartItems.length; i++) {
-      // Multiply price of each item by its quantity and add to the total
-      total += widget.cartItems[i].price * itemCounts[i]!;
+    List<Products> items = widget.cartItems.keys.toList();
+    for(var i=0; i < items.length; i++) {
+      totalPrice += items[i].price * widget.cartItems[items[i]]!;
     }
 
     setState(() {
@@ -59,6 +56,7 @@ class _CartState extends State<Cart> {
   // Calculate the total price by multiplying each item's price with its quantity.
   @override
   Widget build(BuildContext context) {
+    final items = widget.cartItems.keys.toList();
     return Scaffold(
         appBar: AppBar(
           elevation: 3,
@@ -100,7 +98,7 @@ class _CartState extends State<Cart> {
                     child: ListView.builder(
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
-                        final product = widget.cartItems[index];
+                        final product = items[index];
                         return Card(
                             elevation: 3,
                             margin: const EdgeInsets.all(5),
@@ -150,8 +148,9 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          if(itemCounts[index]! > 0) {
-                                                            itemCounts[index] = itemCounts[index]! - 1;
+                                                          if(widget.cartItems[items[index]]! > 0) {
+                                                            totalPrice = 0.0;
+                                                            widget.cartItems[items[index]] = widget.cartItems[items[index]]! - 1;
                                                           }
                                                           calculateTotalPrice();
                                                         });
@@ -166,7 +165,7 @@ class _CartState extends State<Cart> {
                                                     ),
                                                     Padding(
                                                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                                                      child: Text("${itemCounts[index]}"),
+                                                      child: Text("${widget.cartItems[items[index]]}"),
                                                     ),
                                                     Container(
                                                       width: 3,
@@ -176,7 +175,8 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          itemCounts[index] = itemCounts[index]! + 1;
+                                                          totalPrice = 0.0;
+                                                          widget.cartItems[items[index]] = widget.cartItems[items[index]]! + 1;
                                                           calculateTotalPrice();
                                                         });
                                                       },
