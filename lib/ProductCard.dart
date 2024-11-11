@@ -7,16 +7,20 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class ProductCard extends StatefulWidget {
   final Products product;
   final User? user;
-  final Function cart;
+  final Function addToCart;
+  final Function removeFromCart;
   final Map<Products, int> cartItems;
+  final bool isAdded;
   final Function menuPress;
 
   const ProductCard({
     required this.product,
     super.key,
     required this.user,
-    required this.cart,
+    required this.addToCart,
+    required this.removeFromCart,
     required this.cartItems,
+    required this.isAdded,
     required this.menuPress
   });
 
@@ -25,22 +29,6 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-
-  bool pressed = false;
-
-  late List<Products> items;
-
-  @override
-  void initState() {
-    super.initState();
-    items = widget.cartItems.keys.toList();
-    for(var i=0; i<items.length; i++) {
-      if(items[i].id == widget.product.id) {
-        pressed = true;
-        break;
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +42,7 @@ class _ProductCardState extends State<ProductCard> {
                   user: widget.user,
                   cartItems: widget.cartItems,
                   menuPress: widget.menuPress,
+                  removeFromCart: widget.removeFromCart
                 )
             )
         );
@@ -107,20 +96,15 @@ class _ProductCardState extends State<ProductCard> {
                   alignment: Alignment.bottomCenter,
                   child: ElevatedButton(
                       onPressed: () {
-                        if(widget.cartItems.isNotEmpty && !items.contains(widget.product)) {
-                          widget.cart(widget.product);
-                        } else {
-                          widget.cart(widget.product);
+                        if(!widget.isAdded || widget.cartItems.isEmpty) {
+                          widget.addToCart(widget.product);
                         }
-                        setState(() {
-                          pressed = true;
-                        });
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: pressed ? Colors.grey[300] : Colors.blue,
-                          foregroundColor: pressed ? Colors.black : Colors.white
+                          backgroundColor: widget.isAdded ? Colors.grey[300] : Colors.blue,
+                          foregroundColor: widget.isAdded ? Colors.black : Colors.white
                       ),
-                      child: pressed ? const Text("Added to cart") : const Text("Add to cart")
+                      child: widget.isAdded ? const Text("Added to cart") : const Text("Add to cart")
                   ),
                 ),
               )

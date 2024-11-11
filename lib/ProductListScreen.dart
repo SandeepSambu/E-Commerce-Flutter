@@ -31,6 +31,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   late Map<Products, int> items;
 
+  Set<int> addedProductIds = {};
+
   final List<String> images = [
     "Images/beauty.jpeg",
     "Images/electronics.jpeg",
@@ -38,23 +40,29 @@ class _ProductListScreenState extends State<ProductListScreen> {
     "Images/grocery.jpeg"
   ];
 
-  void cart(Products product) {
+  void addToCart(Products product) {
     setState(() {
-      items[product] = 1;
+      items[product] = (items[product] ?? 0) + 1;
+      addedProductIds.add(product.id);
+    });
+  }
+
+  void removeFromCart(Products product) {
+    setState(() {
+      if(items[product] == 1) {
+        items.remove(product);
+        addedProductIds.remove(product.id);
+      } else {
+        items[product] = items[product]! - 1;
+      }
     });
   }
 
   @override
   void initState() {
     super.initState();
-    print("displayName - ${widget.user?.displayName}");
-
-    if(widget.cartItems.isNotEmpty) {
-      items = widget.cartItems;
-    } else {
-      items = {};
-    }
-
+    items = widget.cartItems.isNotEmpty ? widget.cartItems : {};
+    addedProductIds = items.keys.map((product) => product.id).toSet();
     productData = fetchProductsData();
     Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       setState(() {
@@ -70,10 +78,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
+  bool isLandscape(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+
   @override
   Widget build(BuildContext context) {
+    const addOn = kIsWeb ? 50 : 150;
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height + 50;
+    final screenHeight = MediaQuery.of(context).size.height + addOn;
     final childAspectRatio = screenWidth / screenHeight;
     const crossAxisCount = kIsWeb ? 3 : 2;
     return MaterialApp(
@@ -87,14 +100,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
             title: const Text("MyProducts"),
             actions:  [
               SizedBox(
-                width: kIsWeb ? 500 : 240,
+                width: kIsWeb || isLandscape(context) ? 500 : 240,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                         child: SizedBox(
-                          width: kIsWeb ? 400 : 230,
+                          width: kIsWeb || isLandscape(context) ? 400 : 230,
                           child: SearchAnchor(
                             builder: (BuildContext context, SearchController controller) {
                               return SearchBar(
@@ -117,15 +130,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ],
                 ),
               ),
-              if(kIsWeb)
+              if(kIsWeb || isLandscape(context))
                  Row(
                   children: [
-                    widget.user != null
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text("Hello, ${widget.user!.displayName}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),)
-                      )
-                    : const Text(""),
+                    kIsWeb
+                        ? widget.user != null
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                "Hello, ${widget.user!.displayName}",
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),))
+                          : const Text("")
+                        : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: IconButton(onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: widget.user, cartItems: widget.cartItems)));
+                          }, icon: const Icon(Icons.home_filled))
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: Row(
@@ -135,7 +156,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           const SizedBox(width: 5),
                           IconButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Cart(user: widget.user, cartItems: items,)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=> Cart(user: widget.user, cartItems: items, removeFromCart: removeFromCart)));
                             },
                             icon: const Icon(Icons.add_shopping_cart)
                           ),
@@ -152,7 +173,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   future: productData,
                   builder: (context, snapshot) {
                     if(snapshot.hasData) {
-                      List<dynamic> filteredProducts = snapshot.data!.where((product) =>
+                      List<Products> filteredProducts = snapshot.data!.where((product) =>
                           product.title.toLowerCase().startsWith(searchText.text.toLowerCase())).toList();
                       return Stack(
                         children: [
@@ -190,16 +211,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       crossAxisCount: crossAxisCount,
                                       mainAxisSpacing: 5,
                                       crossAxisSpacing: 5,
-                                      childAspectRatio: kIsWeb ? childAspectRatio : 0.7
+                                      childAspectRatio: kIsWeb || isLandscape(context) ? childAspectRatio : 0.7
                                     ),
                                     itemCount: filteredProducts.length,
                                     itemBuilder: (context, index) {
                                       final product = filteredProducts[index];
+                                      final isAdded = addedProductIds.contains(product.id);
                                       return ProductCard(
                                         product: product,
                                         user: widget.user,
-                                        cart: cart,
+                                        addToCart: addToCart,
+                                        removeFromCart: removeFromCart,
                                         cartItems: widget.cartItems,
+                                        isAdded: isAdded,
                                         menuPress: menuPress,
                                       );
                                     }
@@ -208,7 +232,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               ],
                             ),
                           ),
-                          kIsWeb ? const SizedBox() : Footer(user: widget.user, cartItems : items, menuPress: menuPress,)
+                          kIsWeb || isLandscape(context)
+                              ? const SizedBox()
+                              : Footer(
+                              user: widget.user,
+                              cartItems : items,
+                              menuPress: menuPress,
+                              removeFromCart: removeFromCart
+                          )
                         ],
                       );
                     } else if(snapshot.hasError) {
