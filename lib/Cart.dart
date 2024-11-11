@@ -5,6 +5,7 @@ import 'package:recipeapp_flutter/Menu.dart';
 import 'package:recipeapp_flutter/ProductListScreen.dart';
 import 'network.dart';
 
+// Cart screen where users can view and manage their cart items.
 class Cart extends StatefulWidget {
   final User? user;
   final Map<Products, int> cartItems;
@@ -15,6 +16,7 @@ class Cart extends StatefulWidget {
     required this.user,
     required this.cartItems,
     required this.removeFromCart
+
   });
 
   @override
@@ -24,8 +26,9 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   double totalPrice = 0.0;
 
-  bool isExpanded = false;
+  bool isExpanded = false;  // Boolean to manage the visibility of the menu.
 
+  // Toggle menu visibility when the menu button is pressed.
   void menuPress() {
     setState(() {
       isExpanded = !isExpanded;
@@ -35,6 +38,10 @@ class _CartState extends State<Cart> {
   @override
   void initState() {
     super.initState();
+    // Initialize the itemCounts map to track quantity of each product in the cart.
+    for (var i = 0; i < widget.cartItems.length; i++) {
+      itemCounts[i] = 1; // Default each item to 1 quantity in the cart.
+    }
     calculateTotalPrice();
   }
 
@@ -43,12 +50,18 @@ class _CartState extends State<Cart> {
     for(var i=0; i < items.length; i++) {
       totalPrice += items[i].price * widget.cartItems[items[i]]!;
     }
+
+    setState(() {
+      totalPrice = total; // Update the total price
+    });
   }
+
 
   bool isLandscape(BuildContext context) {
     return MediaQuery.of(context).orientation == Orientation.landscape;
   }
-
+  
+  // Calculate the total price by multiplying each item's price with its quantity.
   @override
   Widget build(BuildContext context) {
     final items = widget.cartItems.keys.toList();
@@ -94,7 +107,6 @@ class _CartState extends State<Cart> {
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
                         final product = items[index];
-                        // itemCounts[index] = itemCounts[index] ?? 1;
                         return Card(
                             elevation: 3,
                             margin: const EdgeInsets.all(5),
@@ -233,8 +245,8 @@ class _CartState extends State<Cart> {
                                       context,
                                       MaterialPageRoute(builder: (context) => ProductListScreen(
                                         user: widget.user,
-                                        cartItems: widget.cartItems)
-                                      )
+                                        cartItems: widget.cartItems
+                                      ))
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(

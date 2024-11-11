@@ -6,6 +6,7 @@ import 'package:recipeapp_flutter/Footer.dart';
 import 'package:recipeapp_flutter/ProductListScreen.dart';
 import 'package:recipeapp_flutter/network.dart';
 
+// represents a detailed view of a selected product, displaying information and reviews.
 class ProductDetailScreen extends StatelessWidget {
   final User? user;
   final Products product;

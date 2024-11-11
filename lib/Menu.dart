@@ -10,29 +10,35 @@ class Menu extends StatefulWidget {
   State<Menu> createState() => _MenuState();
 }
 
+// Menu class that accepts a User object to manage the authentication state
 class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
-  late AnimationController _staggeredController;
-  late Animation<Offset> slideAnimation;
-  static const slideInDuration = Duration(milliseconds: 20);
-  static const initialDelayTime = Duration(milliseconds: 50);
-  static const itemSlideTime = Duration(milliseconds: 450);
-  static const staggerTime = Duration(milliseconds: 50);
-  static const buttonDelayTime = Duration(milliseconds: 350);
-  static const buttonTime = Duration(milliseconds: 500);
+  late AnimationController _staggeredController;  // Controller for the staggered animations
+  late Animation<Offset> slideAnimation;  // Slide animation for the menu transition
+  static const slideInDuration = Duration(milliseconds: 20);  // Duration for the menu slide-in animation
+  static const initialDelayTime = Duration(milliseconds: 50);  // Initial delay before the first item slides in
+  static const itemSlideTime = Duration(milliseconds: 450);   // Duration for each item to slide in
+  static const staggerTime = Duration(milliseconds: 50);  // Time between each menu item animation
+  static const buttonDelayTime = Duration(milliseconds: 350);   // Delay before the sign-in button slides in
+  static const buttonTime = Duration(milliseconds: 500);    // Duration for the button animation
   final animationDuration = slideInDuration + initialDelayTime + (staggerTime * menuTitles.length) + buttonDelayTime + buttonTime;
+
+  // List of menu titles to display
   static const menuTitles = [
     "Trending",
     "Shop by Category",
     "Help and Setting",
   ];
-  final List<Interval> itemSlideIntervals = [];
-  late Interval buttonInterval;
+  final List<Interval> itemSlideIntervals = [];  // Intervals for each menu item's animation timing
+  late Interval buttonInterval;  // Interval for the sign-in button animation
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize the animation controller with the defined animation duration
     _staggeredController = AnimationController(vsync: this, duration: animationDuration);
 
+    // Create the slide-in animation for the entire menu
     slideAnimation = Tween<Offset>(
       begin: const Offset(-1.0, 0.0),
       end: Offset.zero
@@ -41,25 +47,30 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         curve: Curves.easeInOut
     ));
 
+    // Start the menu slide-in animation
     _staggeredController.forward();
 
+    // Generate the intervals for the staggered item animations
     createAnimationIntervals();
   }
 
+  // Method to create intervals for each item in the menu
   void createAnimationIntervals() {
     for(var i=0;i<menuTitles.length;i++) {
-      final startTime = initialDelayTime + (staggerTime * i);
-      final endTime = startTime + itemSlideTime;
+      final startTime = initialDelayTime + (staggerTime * i);  // Calculate start time based on item index
+      final endTime = startTime + itemSlideTime;  // Calculate end time for the slide animation
       itemSlideIntervals.add(
         Interval(startTime.inMilliseconds / animationDuration.inMilliseconds, endTime.inMilliseconds / animationDuration.inMilliseconds)
       );
     }
 
+    // Calculate the timing interval for the sign-in button animation
     final buttonStartTime = Duration(milliseconds: (menuTitles.length * 50)) + buttonDelayTime;
     final buttonEndTime = buttonStartTime + buttonTime;
     buttonInterval = Interval(buttonStartTime.inMilliseconds / animationDuration.inMilliseconds, buttonEndTime.inMilliseconds / animationDuration.inMilliseconds);
   }
 
+  // Clean up the animation controller when the widget is disposed
   @override
   void dispose() {
     super.dispose();
@@ -67,10 +78,12 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     _staggeredController.dispose();
   }
 
+  // Reverse the animation (slide the menu out)
   void slideOutMenu() {
     _staggeredController.reverse();
   }
 
+  // Method to build the list items for the menu
   List<Widget> buildListItems() {
     final listItems = <Widget>[];
     for(var i=0;i<menuTitles.length;i++) {
