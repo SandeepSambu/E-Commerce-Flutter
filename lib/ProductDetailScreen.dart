@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:recipeapp_flutter/Cart.dart';
 import 'package:recipeapp_flutter/Footer.dart';
+import 'package:recipeapp_flutter/ProductListScreen.dart';
 import 'package:recipeapp_flutter/network.dart';
 
 // represents a detailed view of a selected product, displaying information and reviews.
@@ -10,20 +12,57 @@ class ProductDetailScreen extends StatelessWidget {
   final Products product;
   final Map<Products, int> cartItems;
   final Function menuPress;
+  final Function removeFromCart;
 
   const ProductDetailScreen({
     required this.product,
     super.key,
     required this.user,
+    required this.cartItems,
     required this.menuPress,
-    required this.cartItems
+    required this.removeFromCart
   });
+
+  bool isLandscape(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
+          kIsWeb || isLandscape(context)
+              ? Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 70),
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductListScreen(user: user, cartItems: cartItems)));
+                    },
+                    icon: const Icon(Icons.home_filled)
+                ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.only(right: 30),
+                  child: Row(
+                    children: [
+                      Text("${cartItems.length}", style: const TextStyle(fontSize: 20),),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems, removeFromCart: removeFromCart)));
+                          },
+                          icon: const Icon(Icons.add_shopping_cart)
+                      ),
+                    ],
+                  )
+              )
+            ],
+          )
+              : const SizedBox()
+        ]
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -34,7 +73,7 @@ class ProductDetailScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.center,
                 child: SizedBox(
-                  height: 350,
+                  height: isLandscape(context) ? 200 : 350,
                   child: Image.network(
                     product.images.isNotEmpty ? product.images[0] : '',
                     fit: BoxFit.cover,
@@ -89,7 +128,7 @@ class ProductDetailScreen extends StatelessWidget {
               ],
               const SizedBox(height: 16),
 
-              if (!kIsWeb) Footer(user: user, menuPress: menuPress, cartItems: cartItems,),
+              if (!kIsWeb && !isLandscape(context)) Footer(user: user, cartItems: cartItems, menuPress: menuPress, removeFromCart: removeFromCart,),
             ],
           ),
         ),

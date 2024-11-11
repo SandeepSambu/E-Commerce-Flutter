@@ -9,7 +9,9 @@ class Footer extends StatelessWidget {
   final User? user;
   final Map<Products, int> cartItems;
   final Function menuPress;
-  const Footer({super.key, required this.user, required this.menuPress, required this.cartItems});
+  final Function removeFromCart;
+  const Footer({super.key, required this.user, required this.cartItems, required this.menuPress, required this.removeFromCart});
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,7 @@ class Footer extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems,)));
+                        MaterialPageRoute(builder: (context) => Cart(user: user, cartItems: cartItems, removeFromCart: removeFromCart,)));
                     },
                     icon: const Icon(Icons.add_shopping_cart, size: 40)),
                   Text("${cartItems.length}", style: const TextStyle(fontSize: 25),)

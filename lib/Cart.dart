@@ -9,11 +9,14 @@ import 'network.dart';
 class Cart extends StatefulWidget {
   final User? user;
   final Map<Products, int> cartItems;
+  final Function removeFromCart;
 
   const Cart({
     super.key,
     required this.user,
-    required this.cartItems
+    required this.cartItems,
+    required this.removeFromCart
+
   });
 
   @override
@@ -53,6 +56,11 @@ class _CartState extends State<Cart> {
     });
   }
 
+
+  bool isLandscape(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.landscape;
+  }
+  
   // Calculate the total price by multiplying each item's price with its quantity.
   @override
   Widget build(BuildContext context) {
@@ -76,7 +84,7 @@ class _CartState extends State<Cart> {
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: 70,
+                    height: isLandscape(context) ? 50 : 70,
                     child: const Card(
                       elevation: 3,
                       child: Padding(
@@ -148,11 +156,13 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          if(widget.cartItems[items[index]]! > 0) {
-                                                            totalPrice = 0.0;
-                                                            widget.cartItems[items[index]] = widget.cartItems[items[index]]! - 1;
-                                                          }
-                                                          calculateTotalPrice();
+                                                          // if(widget.cartItems[items[index]]! > 0) {
+                                                          //   widget.cartItems[items[index]] = widget.cartItems[items[index]]! - 1;
+                                                          // } else if(widget.cartItems[items[index]] == 0){
+                                                          //   widget.removeFromCart(product);
+                                                          // }
+                                                          widget.removeFromCart(product);
+                                                          totalPrice -= product.price;
                                                         });
                                                       },
                                                       icon: const Icon(Icons.remove),
@@ -175,9 +185,8 @@ class _CartState extends State<Cart> {
                                                     IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          totalPrice = 0.0;
                                                           widget.cartItems[items[index]] = widget.cartItems[items[index]]! + 1;
-                                                          calculateTotalPrice();
+                                                          totalPrice += product.price;
                                                         });
                                                       },
                                                       icon: const Icon(Icons.add),
